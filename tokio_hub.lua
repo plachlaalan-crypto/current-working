@@ -7,8 +7,10 @@ RunService     = game:GetService("RunService"),
 TweenService   = game:GetService("TweenService"),
  SoundService   = game:GetService("SoundService"),
  Lighting       = game:GetService("Lighting"),
- HttpService    = game:GetService("HttpService"),
- LocalPlayer    = Players.LocalPlayer,
+ HttpService    = game:GetService("HttpService")
+ }
+local LocalPlayer    = Players.LocalPlayer
+  local vars2 = {
  VisualSetters = {},
  mobileButtonContainer,
  apMain,
@@ -41,7 +43,7 @@ RunService.Stepped:Connect(function()
         end
     end
 end)
-local vars = {
+local vars3 = {
 speedToggled       = false,
  fastestStealEnabled = false,
  laggerToggled      = false,
