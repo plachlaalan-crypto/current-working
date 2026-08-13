@@ -1,22 +1,24 @@
 function TOKYO_LAUNCH_MAIN()
 pcall(function() setfpscap(999) end)
-local Players        = game:GetService("Players")
-local RunService     = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local TweenService   = game:GetService("TweenService")
-local SoundService   = game:GetService("SoundService")
-local Lighting       = game:GetService("Lighting")
-local HttpService    = game:GetService("HttpService")
-local LocalPlayer    = Players.LocalPlayer
-local VisualSetters = {}
-local mobileButtonContainer
-local apMain
-local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-local NORMAL_SPEED = 60
-local CARRY_SPEED  = 30
-local LAGGER_SPEED = 15
-local FOV_VALUE    = 70
-local UI_SCALE     = isMobile and 0.65 or 1.0
+local vars = {
+Players        = game:GetService("Players"),
+RunService     = game:GetService("RunService"),
+ UserInputService = game:GetService("UserInputService"),
+TweenService   = game:GetService("TweenService"),
+ SoundService   = game:GetService("SoundService"),
+ Lighting       = game:GetService("Lighting"),
+ HttpService    = game:GetService("HttpService"),
+ LocalPlayer    = Players.LocalPlayer,
+ VisualSetters = {},
+ mobileButtonContainer,
+ apMain,
+ isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled,
+ NORMAL_SPEED = 60,
+ CARRY_SPEED  = 30,
+ LAGGER_SPEED = 15,
+ FOV_VALUE    = 70,
+ UI_SCALE     = isMobile and 0.65 or 1.0
+    }
 local function getMobileOptimized(pcValue, mobileValue)
     return isMobile and mobileValue or pcValue
 end
@@ -39,50 +41,50 @@ RunService.Stepped:Connect(function()
         end
     end
 end)
-local speedToggled       = false
-local fastestStealEnabled = false
-local laggerToggled      = false
-local autoBatToggled     = false
-local hittingCooldown    = false
-local fullAutoPlayEnabled = false
-local fullAutoPlayConn = nil
-local fullAutoPlayLeftEnabled = false
-local fullAutoPlayRightEnabled = false
-local fullAutoPlayLeftConn = nil
-local fullAutoPlayRightConn = nil
-local fullAutoLeftSetter = nil
-local fullAutoRightSetter = nil
-local brainrotReturnLeftEnabled  = false
-local brainrotReturnRightEnabled = false
-local brainrotReturnCooldown     = false
-local lastKnownHealth            = 100
-local G_myPlotSide               = nil
-local G_myPlotName               = nil
-local G_tpAutoEnabled            = false
-local G_autoPlayAfterTP          = false
-local G_countdownActive          = false
-local ultraModeEnabled           = false
-local autoSwingEnabled           = false
-local batCounterEnabled          = false
-local batCounterConn             = nil
-local noCamCollisionEnabled      = false
-local noCamCollisionConn         = nil
-local noCamParts                 = {}
-local _antiLagDescConn           = nil
-local lastBatSwing               = 0
-local BAT_SWING_COOLDOWN         = 0.12
-local SPAWN_DETECT_RADIUS        = 40
-local COUNTDOWN_TARGET           = 4.9
-local SPAWN_Z_RIGHT_THRESHOLD    = 60
-local SPAWN_LEFT                 = Vector3.new(-466.429901, 0, 113.553757)
-local SPAWN_RIGHT                = Vector3.new(-466.42984,  0, 6.55357218)
-local AP_Offsets  = {{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0}}
-local APR_Offsets = {{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0}}
-local BR_L2 = Vector3.new(-475.5, -3.75, 100.5)
-local BR_L3 = Vector3.new(-486.5, -3.75, 100.5)
-local BR_R2 = Vector3.new(-475.50, -3.95, 17.55)
-local BR_R3 = Vector3.new(-486.76, -3.95, 17.55)
-local Keybinds = {
+local vars = {
+speedToggled       = false,
+ fastestStealEnabled = false,
+ laggerToggled      = false,
+ autoBatToggled     = false,
+ hittingCooldown    = false,
+ fullAutoPlayEnabled = false,
+ fullAutoPlayConn = nil,
+ fullAutoPlayLeftEnabled = false,
+ fullAutoPlayRightEnabled = false,
+ fullAutoPlayLeftConn = nil,
+ fullAutoPlayRightConn = nil,
+ fullAutoLeftSetter = nil,
+ fullAutoRightSetter = nil,
+ brainrotReturnLeftEnabled  = false,
+ brainrotReturnRightEnabled = false,
+ brainrotReturnCooldown     = false,
+ lastKnownHealth            = 100,
+ G_myPlotSide               = nil,
+G_myPlotName               = nil,
+ G_tpAutoEnabled            = false,
+ G_autoPlayAfterTP          = false,
+ G_countdownActive          = false,
+ autoSwingEnabled           = false,
+ batCounterEnabled          = false,
+ batCounterConn             = nil,
+ noCamCollisionEnabled      = false,
+ noCamCollisionConn         = nil,
+ noCamParts                 = {},
+ _antiLagDescConn           = nil,
+ lastBatSwing               = 0,
+ BAT_SWING_COOLDOWN         = 0.12,
+ SPAWN_DETECT_RADIUS        = 40,
+ COUNTDOWN_TARGET           = 4.9,
+ SPAWN_Z_RIGHT_THRESHOLD    = 60,
+ SPAWN_LEFT                 = Vector3.new(-466.429901, 0, 113.553757),
+ SPAWN_RIGHT                = Vector3.new(-466.42984,  0, 6.55357218),
+ AP_Offsets  = {{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0}},
+ APR_Offsets = {{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0},{x=0,y=0,z=0}},
+ BR_L2 = Vector3.new(-475.5, -3.75, 100.5),
+ BR_L3 = Vector3.new(-486.5, -3.75, 100.5),
+ BR_R2 = Vector3.new(-475.50, -3.95, 17.55),
+ BR_R3 = Vector3.new(-486.76, -3.95, 17.55),
+ Keybinds = {
     AutoBat        = Enum.KeyCode.E,
     SpeedToggle    = Enum.KeyCode.Q,
     LaggerToggle   = Enum.KeyCode.R,
@@ -95,21 +97,21 @@ local Keybinds = {
     TPDown         = Enum.KeyCode.F,
     AutoLeft       = Enum.KeyCode.Z,
     AutoRight      = Enum.KeyCode.C,
-}
-local isStealing     = false
-local stealStartTime = nil
-local StealData      = {}
-local lastStealTick  = 0
-local plotCache      = {}
-local plotCacheTime  = {}
-local cachedPrompts  = {}
-local promptCacheTime= 0
-local Settings = {
+},
+ isStealing     = false,
+ stealStartTime = nil,
+ StealData      = {},
+ lastStealTick  = 0,
+ plotCache      = {},
+ plotCacheTime  = {},
+ cachedPrompts  = {},
+ promptCacheTime= 0,
+ Settings = {
     AutoStealEnabled = false,
     StealRadius      = 8,
     StealDuration    = 0.2,
-}
-local Values = {
+},
+ Values = {
     STEAL_RADIUS         = 8,
     STEAL_DURATION       = 0.2,
     STEAL_COOLDOWN       = 0.1,
@@ -120,6 +122,7 @@ local Values = {
     HOP_POWER            = 35,
     HOP_COOLDOWN         = 0.08,
 }
+    } 
 local function detectMyPlot()
     local plots = workspace:FindFirstChild("Plots")
     if not plots then return nil, nil end
